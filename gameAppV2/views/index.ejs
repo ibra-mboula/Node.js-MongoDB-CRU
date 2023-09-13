@@ -1,0 +1,158 @@
+
+<!-- je crée un nouveau formulaire qui va sevir a créer un nouveau jeu -->
+<form action="/game" method="POST">
+    <ul>
+        <li>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="Title">
+        </li>
+        
+        <li>
+            <label for="releaseDate">Release Date:</label>
+            <input type="text" id="releaseDate" name="Release Date">
+        </li>
+        
+        <li>
+            <label for="team">Team:</label>
+            <input type="text" id="team" name="Team">
+        </li>
+        
+        <li>
+            <label for="rating">Rating:</label>
+            <input type="text" id="rating" name="Rating">
+        </li>
+        
+        <li>
+            <label for="timesListed">Times Listed:</label>
+            <input type="text" id="timesListed" name="Times Listed">
+        </li>
+        
+        <li>
+            <label for="numberOfReviews">Number of Reviews:</label>
+            <input type="text" id="numberOfReviews" name="Number of Reviews">
+        </li>
+        
+        <li>
+            <label for="genres">Genres:</label>
+            <input type="text" id="genres" name="Genres">
+        </li>
+        
+        <li>
+            <label for="summary">Summary:</label>
+            <input type="text" id="summary" name="Summary">
+        </li>
+        
+        <li>
+            <label for="reviews">Reviews:</label>
+            <input type="text" id="reviews" name="Reviews">
+        </li>
+        
+        <li>
+            <label for="plays">Plays:</label>
+            <input type="text" id="plays" name="Plays">
+        </li>
+        
+        <li>
+            <label for="playing">Playing:</label>
+            <input type="text" id="playing" name="Playing">
+        </li>
+        
+        <li>
+            <label for="backlogs">Backlogs:</label>
+            <input type="text" id="backlogs" name="Backlogs">
+        </li>
+        
+        <li>
+            <label for="wishlist">Wishlist:</label>
+            <input type="text" id="wishlist" name="Wishlist">
+        </li>
+    </ul>
+    <!-- je crée un bouton pour soumettre le formulaire comme j'ai fait avec save de edit mais avec des ajustements -->
+    <input type="submit" value="Create New" style="margin-bottom: 20px;">
+
+</form>
+
+
+<table border="1" style="margin-top: 20px;">
+
+    <!--header de la table -->    
+    <thead> 
+        <tr>
+            <th>Title</th>
+            <th>Release Date</th>
+            <th>Team</th>
+            <th>Rating</th>
+            <th>Times Listed</th>
+            <th>Number of Reviews</th>
+            <th>Genres</th>
+            <th>Plays</th>
+            <th>Playing</th>
+            <th>Backlogs</th>
+            <th>Wishlist</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <!--body de la table -->
+    <tbody>
+        <!-- je fais une boucle pour afficher les données de la base de données -->
+        <% games.forEach(game => { %> <!-- temp var game pour chaque element du jeu dans mon tableau games-->
+            
+            <tr id="game-<%= game["_id"] %>"> <!-- id géré en utilisant _id,  pour que chaque ligne ai un identifiant unique basé sur l'id du jeux dans la db -->
+                <td><%= game["Title"] %></td>
+                <td><%= game["Release Date"] %></td>
+                <td><%= game["Team"].join(', ') %></td>
+                <td><%= game["Rating"] %></td>
+                <td><%= game["Times Listed"] %></td>
+                <td><%= game["Number of Reviews"] %></td>
+                <td><%= game["Genres"].join(', ') %></td>
+                <td><%= game["Plays"] %></td>
+                <td><%= game["Playing"] %></td>
+                <td><%= game["Backlogs"] %></td>
+                <td><%= game["Wishlist"] %></td>
+                <td>
+                    <!-- je crée un lien pour chaque jeu, qui pointe vers la page pour edit du jeu -->
+                    <a href="/game/edit/<%= game["_id"] %>">Edit</a> 
+
+                    <form action="/game/delete" method="POST" style="display:inline;" onsubmit="deleteGame(event, `<%= game['_id'] %>`); return false;">
+                        <input type="hidden" name="id" value="<%= game["_id"] %>"> <!-- (bonne pratique) je crée un input hidden pour transmettre les data de maniere discrete au serveur -->
+                        <input type="submit" value="Delete">
+                    </form>
+
+                    
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+
+    <!-- Script recupéré pour gerer l’action delete-->
+    <script>
+        async function deleteGame(event, gameId) {
+            event.preventDefault(); // Empêcher la soumission du formulaire (pour ne pas recharger la page)
+                    
+            
+            try {
+                const response = await fetch(`/game/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: gameId }),
+                });
+        
+                if (response.ok) {
+                    document.getElementById('game-' + gameId).remove();
+                } else {
+                    console.error('Failed to delete game');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+
+        
+    </script>
+
+
+
+</table>

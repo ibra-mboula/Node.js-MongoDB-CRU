@@ -1,0 +1,102 @@
+
+<!-- je crée un formulaire qui va editer un jeu, on veut qu'il pointe vers la route /game/edit, et qui utilise la methode POST -->
+<form action="/game/edit" method="POST" onsubmit="return editGame(event, `<%= game['_id'] %>`);"> 
+    
+    <!-- (bonne pratique) je crée un input hidden pour transmettre les data de maniere discrete au serveur --> 
+    <input type="hidden" name="id" value="<%= game["_id"] %>"> 
+    
+    <!-- création du formulaire pour l'edit -->
+    
+    <ul>
+        <li>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="Title" value="<%= game["Title"] %>">
+        </li>
+        
+        <li>
+            <label for="releaseDate">Release Date:</label>
+            <input type="text" id="releaseDate" name="Release Date" value="<%= game['Release Date'] %>">
+        </li>
+        
+        <li>
+            <label for="team">Team:</label>
+            <input type="text" id="team" name="Team" value="<%= game['Team'].join(', ') %>">
+        </li>
+        
+        <li>
+            <label for="rating">Rating:</label>
+            <input type="text" id="rating" name="Rating" value="<%= game['Rating'] %>">
+        </li>
+        
+        <li>
+            <label for="timesListed">Times Listed:</label>
+            <input type="text" id="timesListed" name="Times Listed" value="<%= game['Times Listed'] %>">
+        </li>
+        
+        <li>
+            <label for="numberOfReviews">Number of Reviews:</label>
+            <input type="text" id="numberOfReviews" name="Number of Reviews" value="<%= game['Number of Reviews'] %>">
+        </li>
+        
+        <li>
+            <label for="genres">Genres:</label>
+            <input type="text" id="genres" name="Genres" value="<%= game['Genres'].join(', ') %>">
+        </li>
+        
+        <li>
+            <label for="plays">Plays:</label>
+            <input type="text" id="plays" name="Plays" value="<%= game['Plays'] %>">
+        </li>
+        
+        <li>
+            <label for="playing">Playing:</label>
+            <input type="text" id="playing" name="Playing" value="<%= game['Playing'] %>">
+        </li>
+        
+        <li>
+            <label for="backlogs">Backlogs:</label>
+            <input type="text" id="backlogs" name="Backlogs" value="<%= game['Backlogs'] %>">
+        </li>
+        
+        <li>
+            <label for="wishlist">Wishlist:</label>
+            <input type="text" id="wishlist" name="Wishlist" value="<%= game['Wishlist'] %>">
+        </li>
+    </ul>
+    <!-- bouton pour soumettre le formulaire -->
+    <input type="submit" value="Save">
+</form>
+
+
+<!-- le script suivant va gerer la soumission du formulaire -->
+<script>
+    async function editGame(event, gameId) {
+        event.preventDefault();
+    
+        const formData = new FormData(event.target);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+    
+        try {
+            // envoie les data du formulaire à la route  /game/edit via la requête fetch-->
+            const response = await fetch(`/game/edit`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formObject) // on mets en Json 
+            });
+    
+            if (response.ok) {
+                window.location.href = '/';
+            } else {
+                console.error('err edit pas bon');
+            }
+        } catch (err) {
+            console.error('Error:', err);
+        }
+    }
+    
+</script>
